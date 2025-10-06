@@ -1,0 +1,46 @@
+{
+    "name": "Mi primera PWA",
+    "short_name": "MIPWA",
+    "start_url": "pwa-ejemplo/index.html",
+    "scope":"pwa-ejemplo/",
+    "display": "standalone",
+    "background_color":"#545634",
+    "theme_color": "#ff5656",
+    "orientation": "portrait",
+    "icons":[{
+        "src":"icons/icon-72x72.png",
+        "size": "72x72",
+        "type":"image/png"
+    },
+    {
+        "src":"icons/icon-72x72.png",
+        "sizes":"96x96",
+        "type":"image/png"
+    },
+    {
+        "src":"icons/icon-72x72.png",
+        "sizes":"128x128",
+        "type":"image/png"
+    },
+    {
+        "src":"icons/512-removebg-preview.png",
+        "sizes":"192x192",
+        "type":"image/png"
+    },
+    {
+        "src":"icons/icon-72x72.png",
+        "sizes":"256x256",
+        "type":"image/png"
+    },
+    {
+        "src":"icons/icon-72x72.png",
+        "sizes":"384x384",
+        "type":"image/png"
+    },
+    {
+        "src":"icons/512-removebg-preview.png",
+        "sizes":"512x512",
+        "type":"image/png"
+    }
+    ]
+}

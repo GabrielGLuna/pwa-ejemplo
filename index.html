@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="manifest" href="manifest.json">
+    <!-- Color de la barra del navegador -->
+    <link rel="theme_color" content="#2196f1">
+</head>
+<body>
+    <h1>Bienvenidos a mi PWA</h1>    
+    <p>Se puede instalar como apliacion en tu celular</p>
+    <button onclick="alert('Hola desde la PWA')">Click aqui</button>
+
+    <!-- Registrar el Service Worker -->
+    <script>
+        if("serviceWorker" in navigator){
+            navigator.serviceWorker.register("sw.js")
+            .then(reg => console.log("Service Worker Registrado"))
+        }
+    </script>
+</body>
+</html>
