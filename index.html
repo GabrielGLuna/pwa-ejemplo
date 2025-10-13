@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <base href="pwa-ejemplo">
 
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="pwa-ejemplo/manifest.json">
     <!-- Color de la barra del navegador -->
     <link rel="theme_color" content="#2196f1">
 </head>
@@ -17,7 +18,7 @@
     <!-- Registrar el Service Worker -->
     <script>
         if("serviceWorker" in navigator){
-            navigator.serviceWorker.register("sw.js")
+            navigator.serviceWorker.register("pwa-ejemplo/sw.js")
             .then(reg => console.log("Service Worker Registrado"))
         }
     </script>
