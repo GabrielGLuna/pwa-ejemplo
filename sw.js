@@ -1,64 +1,63 @@
+//Ejemplo mas practico de un service worker para una PWA
 
-//PLantilla de un Service Worker minimo
-// 1- nombre del service worker y los archivos a cachear
-
-const { cache } = require("react");
-
-const CACHE_NAME = "mi-cache";
-const BASE_PATH = "pwa-ejemplo/"
-const urlToCache = [
+//t.Nombre sw y los archivos a cachear
+const CACHE_NAME= "mi-cache";
+const BASE_PATH= "/pwa-ejemplo/"; 
+const urlsToCache = [
     `${BASE_PATH}index.html`,
-    `${BASE_PATH}manifest.json`,
     `${BASE_PATH}style.css`,
-    `${BASE_PATH}app.js`,
+    `${BASE_PATH}manifest.json`,
     `${BASE_PATH}offline.html`,
-    `${BASE_PATH}login.html`
-    `${BASE_PATH}icons/icon-192x192.png`,
-    `${BASE_PATH}icons/icon-512x512.png`,
-]
+    `${BASE_PATH}login.html`,
+    `${BASE_PATH}icons/logox192.png`,
+    `${BASE_PATH}icons/logox512.png`,
+];
 
-// 2 Install -> se ejecuta al instalar el service worker
-// se cachean (se meten a cache )los recursos de la PWA
+// INSTALL -> Se ejecuta al instalar el service worker
+// se cachean los rescursos bases de la PWA
+
 self.addEventListener('install', event => {
-    console.log("Service worker: Instalando....");
+    console.log("Service Worker: instalando....");
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache=>{
-            console.log("Archivos cacheados");
-            return cache.addAll(urlToCache)
-        })
-    );
-})
-
-//3 ACTIVATE -> Se ejecuta al activarse el service worker
-// limpiar la memoria del cache viejo para mantener solo laversion actual de la cache
-self.addEventListener("activate", event =>{
-    event.waitUntil(
-        caches.keys().then(keys => 
-            Promise.all(
-                keys.filter( key => key !== CACHE_NAME)
-                .map(key => caches.delete(key))
-            )
-        )
-    )
-})
-
-//4 FETCH -> intercepta peticiones de la app 
-//Intercepta cada petición de la PWA
-// Buscar primero el cache, si no esta busca en la red
-// En caso de falla muestra la pagina offline.html
-self.addEventListener("fetch", event =>{
-    event.respondWidth(
-        caches.match(event.request).then(response =>{
-            return response || fetch(event.request).catch(()=> caches.match(`${BASE_PATH}offline.html`,));
+        caches.open(CACHE_NAME).then(cache => {
+            console.log("Service Worker: cacheando....");
+            return cache.addAll(urlsToCache)
         })
     );
 });
 
-//5 PUSH -> notificaciones en segundo plano
-// 
-self.addEventListener("push", event =>{
-    const data = event.data ? event.data.text() : "Notifacion sin texto"
-    event .waitUntil(
-        self.ServiceWorkerRegistration.showNotification("MI PWA", {body: data})
+// ACTIVATE -> Se ejecuta cuando se activa el service worker
+// se eliminan los caches antiguos
+
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(
+                keys.filter(key => key !== CACHE_NAME)
+                .map(key => caches.delete(key))
+            )
+        )
+    );
+});
+
+// FETCH -> Se ejecuta cuando se hace una peticion
+// se responde con el recurso cacheado o se hace la peticion a la red
+// caso de falla muestra la pagina offline.tml
+
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            return response || fetch(event.request).catch(() => caches.match(`${BASE_PATH}offline.html`));
+        })
+    );
+});
+
+//PUSH -> notfiaciones en segundo plano 
+// Manejo de notificaciones push (Opcional)
+
+self.addEventListener('push', event => {
+    const data = event.data ? event.data.text() : 'Notificación sin texto';
+    event.waitUntil(
+        self.registration.showNotification("Mi PWA",{body: data})
     );
 });
