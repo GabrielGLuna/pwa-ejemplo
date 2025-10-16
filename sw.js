@@ -19,10 +19,10 @@ const urlToCache = [
 
 // 2 Install -> se ejecuta al instalar el service worker
 // se cachean (se meten a cache )los recursos de la PWA
-self.addEventListener("install", event => {
+self.addEventListener('install', event => {
     console.log("Service worker: Instalando....");
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache=>{
+        caches.open(CACHE_NAME).then(cache=>{
             console.log("Archivos cacheados");
             return cache.addAll(urlToCache)
         })
