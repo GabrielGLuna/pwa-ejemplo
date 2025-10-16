@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <base href="pwa-ejemplo">
-
+    
     <link rel="manifest" href="pwa-ejemplo/manifest.json">
     <!-- Color de la barra del navegador -->
     <link rel="theme_color" content="#2196f1">
@@ -15,6 +15,10 @@
     <p>Se puede instalar como apliacion en tu celular</p>
     <button onclick="alert('Hola desde la PWA')">Click aqui</button>
 
+    <ul>
+        <li><a href="pwa-ejemplo/index.html">Inicio</a></li>
+        <li><a href="pwa-ejemplo/login.html">Login</a></li>
+    </ul>
     <!-- Registrar el Service Worker -->
     <script>
         if("serviceWorker" in navigator){
