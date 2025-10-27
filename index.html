@@ -6,9 +6,12 @@
     <title>Document</title>
     <base href="./">
     
-    <link rel="manifest" href="manifest.json">
+
     <!-- Color de la barra del navegador -->
     <link rel="theme_color" content="#2196f1">
+    <link rel="manifest" href="/pwa-ejemplo/manifest.json">
+<meta name="theme-color" content="#ff9956">
+
 </head>
 <body>
     <h1>Bienvenidos a mi PWA</h1>    
@@ -21,11 +24,19 @@
     </ul>
 
     <!-- Registrar el Service Worker -->
-    <script>
-        if("serviceWorker" in navigator){
-            navigator.serviceWorker.register('./sw.js')
-            .then(reg => console.log("Service Worker Registrado"))
-        }
-    </script>
+   <script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/pwa-ejemplo/sw.js', { scope: '/pwa-ejemplo/' })
+      .then(reg => {
+        console.log('Service Worker registrado con scope:', reg.scope);
+      })
+      .catch(err => {
+        console.error('Error al registrar SW:', err);
+      });
+  });
+}
+</script>
+
 </body>
 </html>

@@ -1,64 +1,73 @@
-// sw.js
-
-// Nombre del caché y los archivos a cachear
-const CACHE_NAME = "mi-cache-v1"; // Se recomienda versionar el nombre del caché
-const BASE_PATH = "/pwa-ejemplo/";
+// /pwa-ejemplo/sw.js
+const CACHE_NAME = 'mi-cache-v1';
+const BASE_PATH = '/pwa-ejemplo/';
 const urlsToCache = [
-    `${BASE_PATH}`, // <- AÑADIDO: Para cachear la ruta raíz
-    `${BASE_PATH}index.html`,
-    `${BASE_PATH}style.css`,
-    `${BASE_PATH}manifest.json`,
-    `${BASE_PATH}offline.html`,
-    `${BASE_PATH}login.html`,
-    `${BASE_PATH}icons/icon-192x192.png`,
-    `${BASE_PATH}icons/icon-512x512.png`,
+  `${BASE_PATH}`,
+  `${BASE_PATH}index.html`,
+  `${BASE_PATH}style.css`,
+  `${BASE_PATH}manifest.json`,
+  `${BASE_PATH}offline.html`,
+  `${BASE_PATH}login.html`,
+  `${BASE_PATH}icons/icon-192x192.png`,
+  `${BASE_PATH}icons/icon-512x512.png`
 ];
 
-// INSTALL -> Se ejecuta al instalar el service worker
-// Se cachean los recursos base de la PWA
 self.addEventListener('install', event => {
-    console.log("Service Worker: instalando....");
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            console.log("Service Worker: cacheando archivos base....");
-            return cache.addAll(urlsToCache);
-        })
-    );
+  console.log('[SW] instalando...');
+  self.skipWaiting(); // opcional, fuerza activación más rápido
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(urlsToCache);
+    })
+  );
 });
 
-// ACTIVATE -> Se ejecuta cuando se activa el service worker
-// Se eliminan los cachés antiguos para evitar conflictos
 self.addEventListener('activate', event => {
-    console.log("Service Worker: activando y limpiando caché antiguo....");
-    event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(
-                keys.filter(key => key !== CACHE_NAME)
-                .map(key => caches.delete(key))
-            )
-        )
-    );
+  console.log('[SW] activando...');
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.filter(key => key !== CACHE_NAME)
+            .map(key => caches.delete(key))
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
-// FETCH -> Se ejecuta cuando la aplicación hace una petición (e.g., a una página o un recurso)
-// Responde con el recurso cacheado o, si falla, muestra la página offline.
 self.addEventListener('fetch', event => {
+  // Manejo preferente: si es navegación (HTML) -> network-first con fallback a cached offline
+  if (event.request.mode === 'navigate') {
     event.respondWith(
-        caches.match(event.request).then(response => {
-            // Si la respuesta está en la caché, la retorna.
-            // Si no, intenta obtenerla de la red.
-            return response || fetch(event.request).catch(() => {
-                // Si la petición a la red falla (sin conexión), muestra la página offline.
-                return caches.match(`${BASE_PATH}offline.html`);
-            });
-        })
+      fetch(event.request).then(resp => {
+        // opcional: actualizar cache de la página navegada
+        return caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, resp.clone()).catch(() => {});
+          return resp;
+        });
+      }).catch(() => {
+        return caches.match(`${BASE_PATH}offline.html`);
+      })
     );
+    return;
+  }
+
+  // Para otros recursos: cache-first, luego network
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      return cached || fetch(event.request).then(networkResp => {
+        // opcional: cachear respuestas estáticas
+        return networkResp;
+      });
+    }).catch(() => {
+      // fallback para imágenes u otros si quieres
+      return caches.match(`${BASE_PATH}offline.html`);
+    })
+  );
 });
 
-// PUSH -> Manejo de notificaciones push (Opcional)
 self.addEventListener('push', event => {
-    const data = event.data ? event.data.text() : 'Notificación sin texto';
-    event.waitUntil(
-        self.registration.showNotification("Mi PWA", { body: data })
-    );
+  const data = event.data ? event.data.text() : 'Notificación sin texto';
+  event.waitUntil(
+    self.registration.showNotification('Mi PWA', { body: data })
+  );
 });
